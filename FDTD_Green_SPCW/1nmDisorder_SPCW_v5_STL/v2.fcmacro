@@ -1,0 +1,83 @@
+# Youn SPCW script
+# needed for inserting privimitves
+import Part, math, random
+# needed for translation of torus
+from FreeCAD import Base
+#
+Randomness=0.001
+# VALUES #
+# (Lattice constant) #
+a0=0.370
+# (Slot width) #
+wid=0.228
+# (Slab thickness) #
+thk=0.200
+# (Radius of first line holes : Squircles) #
+R1=0.100
+# (Radius of second line holes) #
+R2=0.106
+# (Radius of all other holes) #
+R3=0.110
+# (First line shift)
+S1=-0.010
+# (Second line shift)
+S2=0
+# (Offset) #
+Offset=0.105
+L1=S1+Offset+math.sqrt(3)*a0/2
+L2=S2+Offset+math.sqrt(3)*a0
+# Ellipticity
+alpha=1.256
+# Number of unit cells
+Ny=4
+Ncell=80
+# Dielectric Slab
+Wx=Ncell*a0
+Wy=math.sqrt(3)*a0*Ny+L2-wid/2
+Wz=thk
+# Squircles
+def makeSquircle(Radius,Ellipticity,Xpos,Ypos,Zpos):
+   A=alpha*R1+(random.uniform(0,1)*Randomness-Randomness/2)
+   B=R1/alpha+(random.uniform(0,1)*Randomness-Randomness/2)
+   t=range(0,101)
+   t=[tt/100.0 for tt in t]
+   V=[Base.Vector(Xpos+math.sqrt(abs(math.cos(2.0*math.pi*tt)))*A*math.copysign(1,math.cos(2.0*math.pi*tt)),Ypos+math.sqrt(abs(math.sin(2.0*math.pi*tt)))*B*math.copysign(1,math.sin(2.0*math.pi*tt)),Zpos) for tt in t]
+   Sq=Part.makePolygon(V)
+   Sq=Part.Face(Sq)
+   SQ=Sq.extrude(Base.Vector(0,0,thk))
+   return SQ
+# Create new document
+App.newDocument("SPCW_v1")
+App.setActiveDocument("SPCW_v1")
+App.ActiveDocument=App.getDocument("SPCW_v1")
+Gui.ActiveDocument=Gui.getDocument("SPCW_v1")
+
+# Dielectric Slab
+DIU=Part.makeBox(Wx,Wy,Wz)
+DIU.translate(Base.Vector(-Wx/2,wid/2,-thk/2))
+DID=Part.makeBox(Wx,Wy,Wz)
+DID.translate(Base.Vector(-Wx/2,-Wy-wid/2,-thk/2))
+
+# Holes
+for i in range(Ncell+2):
+  H1=makeSquircle(R1,alpha,-Wx/2+(random.uniform(0,1)*Randomness-Randomness/2)+i*a0,L1+(random.uniform(0,1)*Randomness-Randomness/2),-thk/2)
+  DIU=DIU.cut(H1)
+  H2=Part.makeCylinder(R2+(random.uniform(0,1)*Randomness-Randomness/2),Wz)
+  H2.translate(Base.Vector(-Wx/2+a0/2+i*a0+(random.uniform(0,1)*Randomness-Randomness/2),L2+(random.uniform(0,1)*Randomness-Randomness/2),-thk/2))
+  DIU=DIU.cut(H2)
+  for j in range(Ny):
+    H3=Part.makeCylinder(R3+(random.uniform(0,1)*Randomness-Randomness/2),Wz)
+    H3.translate(Base.Vector(-Wx/2+i*a0+(random.uniform(0,1)*Randomness-Randomness/2),L2+math.sqrt(3)*a0/2+math.sqrt(3)*j*a0+(random.uniform(0,1)*Randomness-Randomness/2),-thk/2))
+    DIU=DIU.cut(H3)
+    H4=Part.makeCylinder(R3+(random.uniform(0,1)*Randomness-Randomness/2),Wz)
+    H4.translate(Base.Vector(-Wx/2+a0/2+i*a0+(random.uniform(0,1)*Randomness-Randomness/2),L2+math.sqrt(3)*a0+math.sqrt(3)*j*a0+(random.uniform(0,1)*Randomness-Randomness/2),-thk/2))
+    DIU=DIU.cut(H4)
+
+Part.show(DIU)
+DID=DIU.mirror(Base.Vector(1,0,0),Base.Vector(0,1,0))
+Part.show(DID)
+Part.export([DIU,DID],"/home/uqml/Desktop/FreeCAD/20171101_SPCW/SPCW_v1.stp")
+# Make it pretty #
+App.activeDocument().recompute()
+#Gui.activeDocument().activeView().viewAxometric()
+#Gui.SendMsgToActiveView("ViewFit") 
