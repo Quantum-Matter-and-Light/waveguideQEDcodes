@@ -1,0 +1,15 @@
+FDTD_Condition 
+time factor: 10
+Simulation time: 3.3356e-13s 
+Mesh accuracy: 4m 
+FDTD_SimX: 0m 
+FDTD_SimY: 0m 
+FDTD_SimZ: 0m 
+FDTD_SimXspan: 1.68e-05m 
+FDTD_SimYspan: 8.4e-06m 
+FDTD_SimZspan: 6.4e-06m 
+AutoShutOff_minimum: 1e-11
+Meshtype: uniform
+Resolution (dx=dy=dz): 2e-08
+Time Stability Factor (Courant): 1
+Symmetric BC?:Yes

@@ -1,0 +1,8 @@
+function lAnalysisgroup(h,cont)
+lcommand(h,'addanalysisgroup',cont)
+lset(h,cont,'name','amplitude_correction')
+lset(h,cont,'script','runanalysis("Q analysis");')
+lset(h,cont,'Q=getdata("Q analysis","Q");')
+lset(h,cont,'f0=getdata("Q analysis","f0");')
+lset(h,cont,'apod_time=max(getdata("Q analysis::t1","t"));')
+lcommand(h,'addtogroup',cont)
