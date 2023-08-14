@@ -6,6 +6,6 @@ Please note the GPL v3 license for the usage of the codes. For the description, 
 
 Citation: https://arxiv.org/abs/1712.02020
 
-(To be added)
+See also the thesis: https://uwspace.uwaterloo.ca/handle/10012/17523
 
 Contributor: Youn Seok Lee
